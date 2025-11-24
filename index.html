@@ -113,7 +113,7 @@
 <script>
     /**
      * NAPS-MAN GAME ENGINE - GITHUB HOSTED VERSION
-     * Assets are loaded from the assets/ folder
+     * Mobile Fix: Audio loading is now optional/background.
      */
 
     // --- Configuration ---
@@ -129,7 +129,6 @@
     const ANIMATION_INTERVAL_MS = 1000 / (ANIMATION_RATE_HZ * 2);
 
     // --- Assets Management ---
-    // UPDATED to match your latest folder structure and capitalization
     const ASSET_PATHS = {
         playerOpen: 'assets/face_open.JPG',     // Capital JPG
         playerClosed: 'assets/face_closed.jpg', // Lowercase jpg
@@ -144,7 +143,9 @@
     bgMusic.loop = true;
 
     let loadedCount = 0;
-    const totalAssets = 4;
+    
+    // UPDATED: We only wait for the 3 images. Music is optional.
+    const totalAssets = 3; 
     
     function assetLoaded() {
         loadedCount++;
@@ -168,12 +169,11 @@
         loadText.style.color = "red";
         console.error("Failed to load asset:", e.target.src);
         
-        // Helpful debug info for you
         const fileName = e.target.src.split('/').pop();
         alert("Could not load: " + fileName + "\nCheck folder structure and capitalization!");
     }
 
-    // Trigger Loads
+    // Trigger Loads for Images (Critical)
     imgOpen.onload = assetLoaded; imgOpen.onerror = assetError;
     imgOpen.src = ASSET_PATHS.playerOpen;
 
@@ -183,8 +183,8 @@
     imgGhost.onload = assetLoaded; imgGhost.onerror = assetError;
     imgGhost.src = ASSET_PATHS.ghost;
 
-    bgMusic.oncanplaythrough = assetLoaded; 
-    bgMusic.onerror = assetError;
+    // Trigger Load for Music (Non-Critical)
+    // We do NOT wait for this to finish to start the game
     bgMusic.src = ASSET_PATHS.music;
     
     // --- Game State ---
@@ -583,7 +583,7 @@
         initGame();
         gameRunning = true;
         
-        // Start Audio
+        // Start Audio - Mobile Safari requires this to be inside a click handler
         bgMusic.play().catch(e => console.log("Audio Error:", e));
 
         loop();
